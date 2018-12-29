@@ -6,6 +6,7 @@ from commands import UpdateCommand
 
 class DanfossClient:
     def __init__(self, config):
+        self._host = config["host"]
 #        self._socket = socket(AF_INET, SOCK_STREAM)
 
     def command(self, command):
@@ -15,7 +16,10 @@ class DanfossClient:
             raise Exception("Not yet implemented")
 
     def _readCommand(self, command):
-        if command == ReadCommand.exhaustTemperature:
+        if(command == ReadCommand.exhaustTemperature or
+           command == ReadCommand.outdoorTemperature or
+           command == ReadCommand.extractTemperature or
+           command == ReadCommand.supplyTemperature):
             return self._readTemperature(command)
 
         raise Exception("Unknown command")
@@ -25,7 +29,7 @@ class DanfossClient:
 
     def _readShort(self, command):
         with socket(AF_INET, SOCK_STREAM) as s:
-            s.connect(("10.100.0.11", 30046))
+            s.connect((self._host, 30046))
             s.send(command.value)
             result = s.recv(63)
             s.close()
