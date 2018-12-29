@@ -1,7 +1,7 @@
 from enum import Enum
 
 class ReadCommand(Enum):
-    ExhaustTemperature = 1
+    exhaustTemperature = bytes([0x04, 0x04, 0x14, 0x75])
     SupplyTemperature = 2
     ExtractTemperature = 3
     OutdoorTemperature = 4
