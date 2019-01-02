@@ -1,8 +1,8 @@
 from socket import socket
 from socket import AF_INET
 from socket import SOCK_STREAM
-from commands import ReadCommand
-from commands import UpdateCommand
+from .commands import ReadCommand
+from .commands import UpdateCommand
 
 class DanfossClient:
     def __init__(self, config):
