@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(name='pydanfossair',
       version=pydanfossair.__version__,
-      description='What the module does',
+      description='Python interface for Danfoss Air HRV systems',
       url='https://github.com/JonasPed/pydanfoss-air',
       author='Jonas Pedersen',
       author_email='jonas@pedersen.ninja',

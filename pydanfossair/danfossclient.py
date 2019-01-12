@@ -4,6 +4,7 @@ from socket import SOCK_STREAM
 from .commands import ReadCommand
 from .commands import UpdateCommand
 from struct import *
+
 class DanfossClient:
     def __init__(self, config):
         self._host = config["host"]
@@ -50,7 +51,7 @@ class DanfossClient:
             s.send(command.value)
             result = s.recv(63)
             s.close()
-            print(result)
+
             return result
 
     def _readShort(self, command):
