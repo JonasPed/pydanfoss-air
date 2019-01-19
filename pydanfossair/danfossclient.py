@@ -50,7 +50,7 @@ class DanfossClient:
             s.send(command.value)
             result = s.recv(63)
             s.close()
-            print(result)
+
             return result
 
     def _readShort(self, command):
