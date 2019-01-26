@@ -6,8 +6,8 @@ from .commands import UpdateCommand
 from struct import *
 
 class DanfossClient:
-    def __init__(self, config):
-        self._host = config["host"]
+    def __init__(self, host):
+        self._host = host
 #        self._socket = socket(AF_INET, SOCK_STREAM)
 
     def command(self, command):
