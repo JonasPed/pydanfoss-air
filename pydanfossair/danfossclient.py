@@ -16,6 +16,14 @@ class DanfossClient:
         else:
             raise Exception("Not yet implemented")
 
+    def read_all(self):
+        result = {}
+
+        for command in ReadCommand:
+            result[command] = self.command(command)
+
+        return result
+
     def _readCommand(self, command):
         if(command == ReadCommand.exhaustTemperature or
            command == ReadCommand.outdoorTemperature or
@@ -28,11 +36,12 @@ class DanfossClient:
                 ):
             return self._readPercent(command)
 
-        if(command == ReadCommand.bypass
+        if(command == ReadCommand.bypass or
+           command == ReadCommand.boost
                 ):
             return self._readBit(command)
 
-        raise Exception("Unknown command")
+        raise Exception("Unknown command: {0}".format(command))
 
     def _readTemperature(self, command):
         return self._readShort(command)/100
