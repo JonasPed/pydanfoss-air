@@ -13,4 +13,3 @@ class ReadCommand(Enum):
 class UpdateCommand(Enum):
     BypassActivate = 1
     BypassDeactivate = 2
-

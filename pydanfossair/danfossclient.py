@@ -3,17 +3,15 @@ from socket import AF_INET
 from socket import SOCK_STREAM
 from .commands import ReadCommand
 from .commands import UpdateCommand
-from struct import *
 
 class DanfossClient:
     def __init__(self, host):
         self._host = host
-#        self._socket = socket(AF_INET, SOCK_STREAM)
 
     def command(self, command):
         if isinstance(command, ReadCommand):
-            return self._readCommand(command)
-        else:
+            return self._read_command(command)
+
             raise Exception("Not yet implemented")
 
     def read_all(self):
@@ -24,37 +22,37 @@ class DanfossClient:
 
         return result
 
-    def _readCommand(self, command):
+    def _read_command(self, command):
         if(command == ReadCommand.exhaustTemperature or
            command == ReadCommand.outdoorTemperature or
            command == ReadCommand.extractTemperature or
            command == ReadCommand.supplyTemperature):
-            return self._readTemperature(command)
+            return self._read_temperature(command)
 
         if(command == ReadCommand.humidity or
            command == ReadCommand.filterPercent
                 ):
-            return self._readPercent(command)
+            return self._read_percent(command)
 
         if(command == ReadCommand.bypass or
            command == ReadCommand.boost
                 ):
-            return self._readBit(command)
+            return self._read_bit(command)
 
         raise Exception("Unknown command: {0}".format(command))
 
-    def _readTemperature(self, command):
-        return self._readShort(command)/100
+    def _read_temperature(self, command):
+        return self._read_short(command)/100
 
-    def _readBit(self, command):
-        result = self._readValue(command)
+    def _read_bit(self, command):
+        result = self._read_value(command)
         return result[0] != 0x00
 
-    def _readPercent(self, command):
-        result = self._readValue(command)
+    def _read_percent(self, command):
+        result = self._read_value(command)
         return int(result[0]) * 100/255
 
-    def _readValue(self, command):
+    def _read_value(self, command):
         with socket(AF_INET, SOCK_STREAM) as s:
             s.connect((self._host, 30046))
             s.send(command.value)
@@ -63,8 +61,8 @@ class DanfossClient:
 
             return result
 
-    def _readShort(self, command):
-       result = self._readValue(command)
+    def _read_short(self, command):
+        result = self._read_value(command)
 
-       r = bytes([result[0], result[1]])
-       return int.from_bytes(r, byteorder = 'big', signed=True)
+        r = bytes([result[0], result[1]])
+        return int.from_bytes(r, byteorder = 'big', signed=True)
