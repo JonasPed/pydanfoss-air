@@ -39,6 +39,14 @@ class DanfossClient:
                 ):
             return self._read_bit(command)
 
+        if(command == ReadCommand.supply_fan_speed or
+           command == ReadCommand.exhaust_fan_speed
+                ):
+            return self._read_short(command)
+
+        if(command == ReadCommand.fan_step):
+            return self._read_byte(command)
+
         raise Exception("Unknown command: {0}".format(command))
 
     def _read_temperature(self, command):
@@ -61,8 +69,16 @@ class DanfossClient:
 
             return result
 
+    def _read_byte(self, command):
+        result = self._read_value(command)
+        
+        r = bytes([result[0]])
+        
+        return int.from_bytes(r, byteorder = 'big', signed=True)
+
     def _read_short(self, command):
         result = self._read_value(command)
-
+        
         r = bytes([result[0], result[1]])
+        
         return int.from_bytes(r, byteorder = 'big', signed=True)
