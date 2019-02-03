@@ -44,7 +44,8 @@ class DanfossClient:
             return self._read_temperature(command)
 
         if(command == ReadCommand.humidity or
-           command == ReadCommand.filterPercent
+           command == ReadCommand.filterPercent or
+           command == ReadCommand.battery_percent
                 ):
             return self._read_percent(command)
 
