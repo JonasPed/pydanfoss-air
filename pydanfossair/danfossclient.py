@@ -12,7 +12,10 @@ class DanfossClient:
         if isinstance(command, ReadCommand):
             return self._read_command(command)
 
-            raise Exception("Not yet implemented")
+        if isinstance(command, UpdateCommand):
+            return self._update_command(command)
+
+        raise Exception("Not yet implemented")
 
     def read_all(self):
         result = {}
@@ -21,6 +24,17 @@ class DanfossClient:
             result[command] = self.command(command)
 
         return result
+
+    def _update_command(self, command):
+        if command == UpdateCommand.boost_activate:
+            self._update_switch(command)
+
+            return self._read_bit(ReadCommand.boost)
+
+        raise Exception("Unknown comand: {0}".format(command))
+
+    def _update_switch(self, command):
+        raise Exception("Not yet implemented")
 
     def _read_command(self, command):
         if(command == ReadCommand.exhaustTemperature or
