@@ -14,6 +14,10 @@ def main():
     if args.command is not None:
         if args.command == "boost_on":
             print("Activate boost: {0}".format(client.command(UpdateCommand.boost_activate)))
+
+        if args.command == "boost_off":
+            print("Activate boost: {0}".format(client.command(UpdateCommand.boost_deactivate)))
+    
     else:
         result = client.read_all()
 

@@ -14,5 +14,5 @@ class ReadCommand(Enum):
     fan_step = bytes([0x00, 0x04, 0x17, 0x81])
 
 class UpdateCommand(Enum):
-    boost_activate = 2
-    boost_deactivate = 3
+    boost_activate = bytes([0x01, 0x06, 0x15, 0x30, 0x01])
+    boost_deactivate = bytes([0x01, 0x06, 0x15, 0x30, 0x00])

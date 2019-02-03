@@ -26,7 +26,7 @@ class DanfossClient:
         return result
 
     def _update_command(self, command):
-        if command == UpdateCommand.boost_activate:
+        if command in {UpdateCommand.boost_activate, UpdateCommand.boost_deactivate}:
             self._update_switch(command)
 
             return self._read_bit(ReadCommand.boost)
@@ -34,7 +34,7 @@ class DanfossClient:
         raise Exception("Unknown comand: {0}".format(command))
 
     def _update_switch(self, command):
-        raise Exception("Not yet implemented")
+        self._read_value(command)
 
     def _read_command(self, command):
         if(command == ReadCommand.exhaustTemperature or
@@ -80,7 +80,7 @@ class DanfossClient:
             s.send(command.value)
             result = s.recv(63)
             s.close()
-
+            
             return result
 
     def _read_byte(self, command):
