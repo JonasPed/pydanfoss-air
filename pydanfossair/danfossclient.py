@@ -49,7 +49,8 @@ class DanfossClient:
             return self._read_percent(command)
 
         if(command == ReadCommand.bypass or
-           command == ReadCommand.boost
+           command == ReadCommand.boost or
+           command == ReadCommand.away_mode
                 ):
             return self._read_bit(command)
 
