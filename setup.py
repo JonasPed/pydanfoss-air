@@ -15,6 +15,6 @@ setup(name='pydanfossair',
     url='https://github.com/JonasPed/pydanfoss-air',
     author='Jonas Pedersen',
     author_email='jonas@pedersen.ninja',
-    license='Apache 2',
+    license='Apache 2.0',
     packages=['pydanfossair'])
 
