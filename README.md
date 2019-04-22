@@ -11,4 +11,5 @@ Python module and client for Danfoss Air HRV systems.
 ## Supported commands
 - boost_on
 - boost_off
-
+- bypass_on
+- bypass_off
