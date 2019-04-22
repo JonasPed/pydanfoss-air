@@ -17,7 +17,12 @@ def main():
 
         if args.command == "boost_off":
             print("Activate boost: {0}".format(client.command(UpdateCommand.boost_deactivate)))
-    
+ 
+        if args.command == "bypass_on":
+            print("Activate bypass: {0}".format(client.command(UpdateCommand.bypass_activate)))
+
+        if args.command == "bypass_off":
+            print("Activate bypass: {0}".format(client.command(UpdateCommand.bypass_deactivate)))
     else:
         result = client.read_all()
 
