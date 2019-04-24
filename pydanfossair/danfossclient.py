@@ -26,17 +26,22 @@ class DanfossClient:
         return result
 
     def _update_command(self, command, socket):
-        if command in {UpdateCommand.boost_activate, 
+        if command in {UpdateCommand.boost_activate,
                        UpdateCommand.boost_deactivate,
                        UpdateCommand.bypass_activate,
-                       UpdateCommand.bypass_deactivate}:
+                       UpdateCommand.bypass_deactivate,
+                       UpdateCommand.automatic_bypass_activate,
+                       UpdateCommand.automatic_bypass_deactivate}:
             self._update_switch(command, socket)
             
             if(command == UpdateCommand.boost_activate or 
                command == UpdateCommand.boost_deactivate):
                 return self._read_bit(ReadCommand.boost, socket)
-            else:
+            elif(command in {UpdateCommand.bypass_activate, 
+                             UpdateCommand.bypass_deactivate}):
                 return self._read_bit(ReadCommand.bypass, socket)
+            else:
+                return self._read_bit(ReadCommand.automatic_bypass_disabled, socket)
 
         raise Exception("Unknown comand: {0}".format(command))
 
