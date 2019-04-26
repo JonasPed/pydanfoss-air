@@ -25,10 +25,10 @@ def main():
             print("Activate bypass: {0}".format(client.command(UpdateCommand.bypass_deactivate)))
 
         if args.command == "automatic_bypass_off":
-            print("Disabling automtic bypass: {0}".format(client.command(UpdateCommand.automatic_bypass_deactivate)))
+            print("Automtic bypass: {0}".format(client.command(UpdateCommand.automatic_bypass_deactivate)))
 
         if args.command == "automatic_bypass_on":
-            print("Disabling automtic bypass: {0}".format(client.command(UpdateCommand.automatic_bypass_activate)))
+            print("Automtic bypass: {0}".format(client.command(UpdateCommand.automatic_bypass_activate)))
                    
     else:
         result = client.read_all()

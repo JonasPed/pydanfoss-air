@@ -37,11 +37,13 @@ class DanfossClient:
             if(command == UpdateCommand.boost_activate or 
                command == UpdateCommand.boost_deactivate):
                 return self._read_bit(ReadCommand.boost, socket)
+            
             elif(command in {UpdateCommand.bypass_activate, 
                              UpdateCommand.bypass_deactivate}):
                 return self._read_bit(ReadCommand.bypass, socket)
+            
             else:
-                return self._read_bit(ReadCommand.automatic_bypass_disabled, socket)
+                return self._read_command(ReadCommand.automatic_bypass, socket)
 
         raise Exception("Unknown comand: {0}".format(command))
 
@@ -63,10 +65,12 @@ class DanfossClient:
 
         if(command == ReadCommand.bypass or
            command == ReadCommand.boost or
-           command == ReadCommand.away_mode or
-           command == ReadCommand.automatic_bypass_disabled
+           command == ReadCommand.away_mode
                 ):
             return self._read_bit(command, socket)
+
+        if command == ReadCommand.automatic_bypass:
+            return not self._read_bit(command, socket)
 
         if(command == ReadCommand.supply_fan_speed or
            command == ReadCommand.exhaust_fan_speed
