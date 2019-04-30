@@ -9,21 +9,34 @@ class DanfossClient:
         self._host = host
 
     def command(self, command):
-        if isinstance(command, ReadCommand):
-            return self._read_command(command, socket)
+        with socket(AF_INET, SOCK_STREAM) as s:
+            s.connect((self._host, 30046))
+            result = self._command(command, s)        
+            s.close()
 
-        if isinstance(command, UpdateCommand):
-            return self._update_command(command, socket)
-
-        raise Exception("Not yet implemented")
+            return result
 
     def read_all(self):
         result = {}
 
-        for command in ReadCommand:
-            result[command] = self.command(command)
+        with socket(AF_INET, SOCK_STREAM) as s:
+            s.connect((self._host, 30046))
+            for command in ReadCommand:
+                result[command] = self._command(command, s)
+
+            s.close()
 
         return result
+
+    def _command(self, command, s):
+        if isinstance(command, ReadCommand):
+            return self._read_command(command, s)
+
+        if isinstance(command, UpdateCommand):
+            return self._update_command(command, s)
+
+        raise Exception("Not yet implemented")
+
 
     def _update_command(self, command, socket):
         if command in {UpdateCommand.boost_activate,
@@ -93,14 +106,11 @@ class DanfossClient:
         result = self._read_value(command, socket)
         return int(result[0]) * 100/255
 
-    def _read_value(self, command, socket):
-        with socket(AF_INET, SOCK_STREAM) as s:
-            s.connect((self._host, 30046))
-            s.send(command.value)
-            result = s.recv(63)
-            s.close()
+    def _read_value(self, command, s):
+        s.send(command.value)
+        result = s.recv(63)
             
-            return result
+        return result
 
     def _read_byte(self, command, socket):
         result = self._read_value(command, socket)
