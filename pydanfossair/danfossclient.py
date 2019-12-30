@@ -1,39 +1,42 @@
-from socket import socket
+from socket import socket as python_socket
 from socket import AF_INET
 from socket import SOCK_STREAM
 from .commands import ReadCommand
 from .commands import UpdateCommand
 
 class DanfossClient:
+    '''
+    Primary class for communicatin with Danfoss HRV.
+    '''
     def __init__(self, host):
         self._host = host
 
     def command(self, command):
-        with socket(AF_INET, SOCK_STREAM) as s:
-            s.connect((self._host, 30046))
-            result = self._command(command, s)
-            s.close()
+        with python_socket(AF_INET, SOCK_STREAM) as danfoss_socket:
+            danfoss_socket.connect((self._host, 30046))
+            result = self._command(command, danfoss_socket)
+            danfoss_socket.close()
 
             return result
 
     def read_all(self):
         result = {}
 
-        with socket(AF_INET, SOCK_STREAM) as s:
-            s.connect((self._host, 30046))
+        with python_socket(AF_INET, SOCK_STREAM) as danfoss_socket:
+            danfoss_socket.connect((self._host, 30046))
             for command in ReadCommand:
-                result[command] = self._command(command, s)
+                result[command] = self._command(command, danfoss_socket)
 
-            s.close()
+            danfoss_socket.close()
 
         return result
 
-    def _command(self, command, s):
+    def _command(self, command, socket):
         if isinstance(command, ReadCommand):
-            return self._read_command(command, s)
+            return self._read_command(command, socket)
 
         if isinstance(command, UpdateCommand):
-            return self._update_command(command, s)
+            return self._update_command(command, socket)
 
         raise Exception("Not yet implemented")
 
@@ -102,9 +105,9 @@ class DanfossClient:
         result = self._read_value(command, socket)
         return int(result[0]) * 100/255
 
-    def _read_value(self, command, s):
-        s.send(command.value)
-        result = s.recv(63)
+    def _read_value(self, command, socket):
+        socket.send(command.value)
+        result = socket.recv(63)
 
         return result
 
