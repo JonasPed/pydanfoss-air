@@ -1,8 +1,14 @@
+'''
+Main for pydanfossair
+'''
 import argparse
 from . import danfossclient
 from .commands import UpdateCommand
 
 def main():
+    '''
+    Main method
+    '''
     parser = argparse.ArgumentParser("pydanfossair")
     parser.add_argument("--host", action="store", required=True)
     parser.add_argument("--command", action="store", required=False)
@@ -17,7 +23,7 @@ def main():
 
         if args.command == "boost_off":
             print("Activate boost: {0}".format(client.command(UpdateCommand.boost_deactivate)))
- 
+
         if args.command == "bypass_on":
             print("Activate bypass: {0}".format(client.command(UpdateCommand.bypass_activate)))
 
@@ -25,11 +31,12 @@ def main():
             print("Activate bypass: {0}".format(client.command(UpdateCommand.bypass_deactivate)))
 
         if args.command == "automatic_bypass_off":
-            print("Automtic bypass: {0}".format(client.command(UpdateCommand.automatic_bypass_deactivate)))
+            print("Automtic bypass: {0}"
+                  .format(client.command(UpdateCommand.automatic_bypass_deactivate)))
 
         if args.command == "automatic_bypass_on":
-            print("Automtic bypass: {0}".format(client.command(UpdateCommand.automatic_bypass_activate)))
-                   
+            print("Automtic bypass: {0}"
+                  .format(client.command(UpdateCommand.automatic_bypass_activate)))
     else:
         result = client.read_all()
 
