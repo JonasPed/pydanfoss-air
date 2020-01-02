@@ -3,6 +3,7 @@ from socket import AF_INET
 from socket import SOCK_STREAM
 from .commands import ReadCommand
 from .commands import UpdateCommand
+from .operation_mode import OperationMode
 
 class DanfossClient:
     def __init__(self, host):
@@ -80,6 +81,9 @@ class DanfossClient:
         if(command == ReadCommand.fan_step):
             return self._read_byte(command, socket)
 
+        if(command == ReadCommand.operation_mode):
+            return self._read_byte(command, socket)
+
         raise Exception("Unknown command: {0}".format(command))
 
     def _read_temperature(self, command, socket):
@@ -104,7 +108,7 @@ class DanfossClient:
 
     def _read_byte(self, command, socket):
         result = self._read_value(command, socket)
-        
+        print(result)
         r = bytes([result[0]])
         
         return int.from_bytes(r, byteorder = 'big', signed=True)
