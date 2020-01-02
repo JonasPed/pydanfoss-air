@@ -67,34 +67,43 @@ class DanfossClient:
         self._read_value(command, socket)
 
     def _read_command(self, command, socket):
+        '''
+        Internal method to read data from unit.
+        '''
+
+        return_value = None
+
         if command in {ReadCommand.exhaustTemperature,
                        ReadCommand.outdoorTemperature,
                        ReadCommand.extractTemperature,
                        ReadCommand.supplyTemperature}:
-            return self._read_temperature(command, socket)
+            return_value = self._read_temperature(command, socket)
 
         if command in {ReadCommand.humidity,
                        ReadCommand.filterPercent,
                        ReadCommand.battery_percent}:
-            return self._read_percent(command, socket)
+            return_value = self._read_percent(command, socket)
 
         if command in {ReadCommand.bypass,
                        ReadCommand.boost,
                        ReadCommand.away_mode}:
-            return self._read_bit(command, socket)
+            return_value = self._read_bit(command, socket)
 
         if command == ReadCommand.automatic_bypass:
-            return not self._read_bit(command, socket)
+            return_value = not self._read_bit(command, socket)
 
         if command in {ReadCommand.supply_fan_speed,
                        ReadCommand.exhaust_fan_speed}:
-            return self._read_short(command, socket)
+            return_value = self._read_short(command, socket)
 
         if command == ReadCommand.fan_step:
-            return self._read_byte(command, socket)
+            return_value = self._read_byte(command, socket)
 
-        if(command == ReadCommand.operation_mode):
-            return self._read_byte(command, socket)
+        if command == ReadCommand.operation_mode:
+            return_value = OperationMode(self._read_byte(command, socket))
+
+        if return_value is not None:
+            return return_value
 
         raise Exception("Unknown command: {0}".format(command))
 
