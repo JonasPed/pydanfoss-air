@@ -1,9 +1,9 @@
 from socket import socket as python_socket
 from socket import AF_INET
 from socket import SOCK_STREAM
-from .commands import ReadCommand
-from .commands import UpdateCommand
-from .operation_mode import OperationMode
+from commands import ReadCommand
+from commands import UpdateCommand
+from operation_mode import OperationMode
 
 class DanfossClient:
     '''
@@ -38,8 +38,8 @@ class DanfossClient:
 
         if isinstance(command, UpdateCommand):
             return self._update_command(command, socket)
-
-        raise Exception("Not yet implemented")
+        else:
+            raise Exception("Not yet implemented")
 
 
     def _update_command(self, command, socket):
@@ -48,7 +48,10 @@ class DanfossClient:
                        UpdateCommand.bypass_activate,
                        UpdateCommand.bypass_deactivate,
                        UpdateCommand.automatic_bypass_activate,
-                       UpdateCommand.automatic_bypass_deactivate}:
+                       UpdateCommand.automatic_bypass_deactivate,
+                       UpdateCommand.operation_mode_demand,
+                       UpdateCommand.operation_mode_program,
+                       UpdateCommand.operation_mode_manual}:
             self._update_switch(command, socket)
 
             if command in {UpdateCommand.boost_activate,
@@ -59,8 +62,30 @@ class DanfossClient:
                            UpdateCommand.bypass_deactivate}:
                 return self._read_bit(ReadCommand.bypass, socket)
 
-            return self._read_command(ReadCommand.automatic_bypass, socket)
+            if command in {UpdateCommand.operation_mode_demand}:
+                return self._read_bit(ReadCommand.operation_mode, socket)
 
+            if command in {UpdateCommand.operation_mode_program}:
+                return self._read_bit(ReadCommand.operation_mode, socket)
+
+            if command in {UpdateCommand.operation_mode_manual}:
+                return self._read_bit(ReadCommand.operation_mode, socket)
+
+
+        if command in {UpdateCommand.set_fan_step_1,
+                      UpdateCommand.set_fan_step_2,
+                      UpdateCommand.set_fan_step_3,
+                      UpdateCommand.set_fan_step_4,
+                      UpdateCommand.set_fan_step_5,
+                      UpdateCommand.set_fan_step_6,
+                      UpdateCommand.set_fan_step_7,
+                      UpdateCommand.set_fan_step_8,
+                      UpdateCommand.set_fan_step_9,
+                      UpdateCommand.set_fan_step_10}:
+                      return self._read_byte(command, socket)
+
+
+        # TODO: Virker ikke som om man kan få denne exeption?
         raise Exception("Unknown comand: {0}".format(command))
 
     def _update_switch(self, command, socket):
@@ -76,7 +101,9 @@ class DanfossClient:
         if command in {ReadCommand.exhaustTemperature,
                        ReadCommand.outdoorTemperature,
                        ReadCommand.extractTemperature,
-                       ReadCommand.supplyTemperature}:
+                       ReadCommand.supplyTemperature,
+                       ReadCommand.roomTemperature,
+                       ReadCommand.roomTemperatureCalculated}:
             return_value = self._read_temperature(command, socket)
 
         if command in {ReadCommand.humidity,
@@ -100,12 +127,10 @@ class DanfossClient:
             return_value = self._read_byte(command, socket)
 
         if command == ReadCommand.operation_mode:
-            return_value = OperationMode(self._read_byte(command, socket))
+            return_value = OperationMode(self._read_byte(command, socket)).name
 
         if return_value is not None:
             return return_value
-
-        raise Exception("Unknown command: {0}".format(command))
 
     def _read_temperature(self, command, socket):
         return self._read_short(command, socket)/100
