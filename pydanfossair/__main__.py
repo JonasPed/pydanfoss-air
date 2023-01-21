@@ -144,12 +144,5 @@ def main():
         for key, value in result.items():
             print("{0}: {1}".format(key, value))
 
-
-    # else:
-    #     result = client.read_all()
-
-    #     for key in result.keys():
-    #         print("{0}: {1}".format(key, result.get(key)))
-
 if __name__ == "__main__":
     main()
