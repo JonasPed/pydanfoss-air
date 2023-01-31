@@ -1,9 +1,9 @@
 from socket import socket as python_socket
 from socket import AF_INET
 from socket import SOCK_STREAM
-from commands import ReadCommand
-from commands import UpdateCommand
-from operation_mode import OperationMode
+from .commands import ReadCommand
+from .commands import UpdateCommand
+from .operation_mode import OperationMode
 
 class DanfossClient:
     '''

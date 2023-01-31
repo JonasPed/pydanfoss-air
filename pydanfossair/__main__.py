@@ -2,9 +2,9 @@
 Main for pydanfossair
 '''
 import argparse
-import danfossclient
-from commands import UpdateCommand
-from commands import ReadCommand
+from . import danfossclient
+from .commands import UpdateCommand
+from .commands import ReadCommand
 
 def main():
     '''
