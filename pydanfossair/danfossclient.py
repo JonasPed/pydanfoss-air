@@ -36,7 +36,7 @@ class DanfossClient:
         if isinstance(command, ReadCommand):
             return self._read_command(command, socket)
 
-        if isinstance(command, UpdateCommand):
+        elif isinstance(command, UpdateCommand):
             return self._update_command(command, socket)
         else:
             raise Exception("Not yet implemented")
@@ -84,8 +84,6 @@ class DanfossClient:
                       UpdateCommand.set_fan_step_10}:
                       return self._read_byte(command, socket)
 
-
-        # TODO: Virker ikke som om man kan få denne exeption?
         raise Exception("Unknown comand: {0}".format(command))
 
     def _update_switch(self, command, socket):
@@ -131,6 +129,8 @@ class DanfossClient:
 
         if return_value is not None:
             return return_value
+
+        raise Exception("Unknown command: {0}".format(command))
 
     def _read_temperature(self, command, socket):
         return self._read_short(command, socket)/100
