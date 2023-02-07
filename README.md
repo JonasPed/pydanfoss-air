@@ -18,6 +18,7 @@ Python module and client for Danfoss Air HRV systems.
 - operation_mode_demand
 - operation_mode_program
 - operation_mode_manual
+- set_fan_step_1
 - set_fan_step_2
 - set_fan_step_3
 - set_fan_step_4
