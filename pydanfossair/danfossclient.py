@@ -126,7 +126,7 @@ class DanfossClient:
             return_value = self._read_short(command, socket)
 
         if command == ReadCommand.fan_step:
-            return_value = self._read_byte(command, socket)
+            return_value = self._read_byte(command, socket) * 10
 
         if command == ReadCommand.operation_mode:
             return_value = OperationMode(self._read_byte(command, socket)).name
