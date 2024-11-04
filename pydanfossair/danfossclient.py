@@ -119,7 +119,7 @@ class DanfossClient:
             return_value = self._read_bit(command, socket)
 
         if command == ReadCommand.automatic_bypass:
-            return_value = self._read_bit(command, socket)
+            return_value = not self._read_bit(command, socket)
 
         if command in {ReadCommand.supply_fan_speed,
                        ReadCommand.exhaust_fan_speed}:
