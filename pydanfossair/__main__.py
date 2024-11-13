@@ -32,11 +32,11 @@ def main():
             print("Activate bypass: {0}".format(client.command(UpdateCommand.bypass_deactivate)))
 
         elif args.command == "automatic_bypass_off":
-            print("Automtic bypass: {0}"
+            print("Automatic bypass: {0}"
                   .format(client.command(UpdateCommand.automatic_bypass_deactivate)))
 
         elif args.command == "automatic_bypass_on":
-            print("Automtic bypass: {0}"
+            print("Automatic bypass: {0}"
                   .format(client.command(UpdateCommand.automatic_bypass_activate)))
 
         elif args.command == "operation_mode_demand":

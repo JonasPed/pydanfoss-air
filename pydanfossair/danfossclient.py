@@ -62,6 +62,10 @@ class DanfossClient:
                            UpdateCommand.bypass_deactivate}:
                 return self._read_bit(ReadCommand.bypass, socket)
 
+            if command in {UpdateCommand.automatic_bypass_activate,
+                           UpdateCommand.automatic_bypass_deactivate}:
+                return self._read_bit(ReadCommand.automatic_bypass, socket)
+
             if command in {UpdateCommand.operation_mode_demand}:
                 return self._read_bit(ReadCommand.operation_mode, socket)
 
@@ -122,7 +126,7 @@ class DanfossClient:
             return_value = self._read_short(command, socket)
 
         if command == ReadCommand.fan_step:
-            return_value = self._read_byte(command, socket)
+            return_value = self._read_byte(command, socket) * 10
 
         if command == ReadCommand.operation_mode:
             return_value = OperationMode(self._read_byte(command, socket)).name
