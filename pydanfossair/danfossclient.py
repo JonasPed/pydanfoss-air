@@ -109,9 +109,12 @@ class DanfossClient:
             return_value = self._read_temperature(command, socket)
 
         if command in {ReadCommand.humidity,
-                       ReadCommand.filterPercent,
-                       ReadCommand.battery_percent}:
+                       ReadCommand.filterPercent}:
             return_value = self._read_percent(command, socket)
+
+        if command in {ReadCommand.battery_percent,
+                       ReadCommand.fan_speed_percent}:
+            return_value = self._read_byte(command, socket)
 
         if command in {ReadCommand.bypass,
                        ReadCommand.boost,
@@ -126,7 +129,7 @@ class DanfossClient:
             return_value = self._read_short(command, socket)
 
         if command == ReadCommand.fan_step:
-            return_value = self._read_byte(command, socket) * 10
+            return_value = self._read_byte(command, socket)
 
         if command == ReadCommand.operation_mode:
             return_value = OperationMode(self._read_byte(command, socket)).name
