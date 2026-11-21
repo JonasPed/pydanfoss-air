@@ -6,7 +6,7 @@ returns on the wire; values are taken from a live Danfoss Air CCM.
 """
 import pytest
 
-from pydanfossair.commands import ReadCommand
+from pydanfossair.commands import ReadCommand, UpdateCommand
 from pydanfossair.danfossclient import DanfossClient
 
 
@@ -97,3 +97,36 @@ def test_automatic_bypass_is_inverted(raw: int, expected: bool) -> None:
     """automatic_bypass reads inverted relative to the raw bit."""
     client, sock = client_with(ReadCommand.automatic_bypass, raw)
     assert client._read_command(ReadCommand.automatic_bypass, sock) is expected
+
+
+@pytest.mark.parametrize(
+    ("command", "register", "raw", "expected"),
+    [
+        (UpdateCommand.automatic_bypass_activate, ReadCommand.automatic_bypass, 0x00, True),
+        (UpdateCommand.automatic_bypass_deactivate, ReadCommand.automatic_bypass, 0x01, False),
+        (UpdateCommand.bypass_activate, ReadCommand.bypass, 0xFF, True),
+        (UpdateCommand.bypass_deactivate, ReadCommand.bypass, 0x00, False),
+        (UpdateCommand.boost_activate, ReadCommand.boost, 0x01, True),
+        (UpdateCommand.boost_deactivate, ReadCommand.boost, 0x00, False),
+    ],
+    ids=[
+        "automatic-bypass-on",
+        "automatic-bypass-off",
+        "bypass-on",
+        "bypass-off",
+        "boost-on",
+        "boost-off",
+    ],
+)
+def test_switch_update_reads_back_decoded_state(
+    command: UpdateCommand, register: ReadCommand, raw: int, expected: bool
+) -> None:
+    """A switch write returns the state decoded the same way as a plain read.
+
+    automatic_bypass is stored inverted, so the read-back after a write must
+    invert it too instead of returning the raw bit.
+    """
+    sock = FakeSocket({command.value: frame(), register.value: frame(raw)})
+    client = DanfossClient("test")
+    assert client._command(command, sock) is expected
+    assert sock._last == register.value
