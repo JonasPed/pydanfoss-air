@@ -130,3 +130,23 @@ def test_switch_update_reads_back_decoded_state(
     client = DanfossClient("test")
     assert client._command(command, sock) is expected
     assert sock._last == register.value
+
+
+@pytest.mark.parametrize(
+    ("command", "raw", "expected"),
+    [
+        (UpdateCommand.operation_mode_demand, 0x00, "demand"),
+        (UpdateCommand.operation_mode_program, 0x01, "program"),
+        (UpdateCommand.operation_mode_manual, 0x02, "manual"),
+    ],
+    ids=["demand", "program", "manual"],
+)
+def test_operation_mode_update_reads_back_mode_name(
+    command: UpdateCommand, raw: int, expected: str
+) -> None:
+    """An operation mode write returns the mode name, like a plain read does."""
+    register = ReadCommand.operation_mode
+    sock = FakeSocket({command.value: frame(), register.value: frame(raw)})
+    client = DanfossClient("test")
+    assert client._command(command, sock) == expected
+    assert sock._last == register.value

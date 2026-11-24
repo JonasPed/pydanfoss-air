@@ -66,14 +66,10 @@ class DanfossClient:
                            UpdateCommand.automatic_bypass_deactivate}:
                 return self._read_command(ReadCommand.automatic_bypass, socket)
 
-            if command in {UpdateCommand.operation_mode_demand}:
-                return self._read_bit(ReadCommand.operation_mode, socket)
-
-            if command in {UpdateCommand.operation_mode_program}:
-                return self._read_bit(ReadCommand.operation_mode, socket)
-
-            if command in {UpdateCommand.operation_mode_manual}:
-                return self._read_bit(ReadCommand.operation_mode, socket)
+            if command in {UpdateCommand.operation_mode_demand,
+                           UpdateCommand.operation_mode_program,
+                           UpdateCommand.operation_mode_manual}:
+                return self._read_command(ReadCommand.operation_mode, socket)
 
 
         if command in {UpdateCommand.set_fan_step_1,
