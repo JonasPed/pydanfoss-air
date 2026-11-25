@@ -7,6 +7,7 @@ returns on the wire; values are taken from a live Danfoss Air CCM.
 import pytest
 
 from pydanfossair.commands import ReadCommand, UpdateCommand
+from pydanfossair import danfossclient
 from pydanfossair.danfossclient import DanfossClient
 
 
@@ -150,3 +151,51 @@ def test_operation_mode_update_reads_back_mode_name(
     client = DanfossClient("test")
     assert client._command(command, sock) == expected
     assert sock._last == register.value
+
+
+class RecordingSocket(FakeSocket):
+    """FakeSocket that records the timeout and address it is used with."""
+
+    def __init__(self, responses: dict[bytes, bytes]) -> None:
+        super().__init__(responses)
+        self.timeout = None
+        self.address = None
+
+    def __enter__(self) -> "RecordingSocket":
+        return self
+
+    def __exit__(self, *exc_info: object) -> None:
+        pass
+
+    def settimeout(self, timeout: float) -> None:
+        self.timeout = timeout
+
+    def connect(self, address: tuple[str, int]) -> None:
+        self.address = address
+
+    def close(self) -> None:
+        pass
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expected"), [({}, 5), ({"timeout": 1.5}, 1.5)], ids=["default", "custom"]
+)
+def test_command_sets_socket_timeout(
+    monkeypatch: pytest.MonkeyPatch, kwargs: dict, expected: float
+) -> None:
+    """The socket gets a timeout before connecting, so an unreachable host fails fast."""
+    sock = RecordingSocket({ReadCommand.fan_step.value: frame(3)})
+    monkeypatch.setattr(danfossclient, "python_socket", lambda *_args: sock)
+
+    assert DanfossClient("192.0.2.1", **kwargs).command(ReadCommand.fan_step) == 3
+    assert sock.timeout == expected
+    assert sock.address == ("192.0.2.1", 30046)
+
+
+def test_read_all_sets_socket_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    """read_all uses the same timeout for its connection."""
+    sock = RecordingSocket({command.value: frame(0) for command in ReadCommand})
+    monkeypatch.setattr(danfossclient, "python_socket", lambda *_args: sock)
+
+    DanfossClient("192.0.2.1", timeout=2).read_all()
+    assert sock.timeout == 2
