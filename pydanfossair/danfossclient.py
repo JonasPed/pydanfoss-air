@@ -5,15 +5,23 @@ from .commands import ReadCommand
 from .commands import UpdateCommand
 from .operation_mode import OperationMode
 
+DEFAULT_TIMEOUT = 5
+
+
 class DanfossClient:
     '''
     Primary class for communicatin with Danfoss HRV.
+
+    timeout is the number of seconds to wait for the connection and for each
+    reply before raising TimeoutError (a subclass of OSError).
     '''
-    def __init__(self, host):
+    def __init__(self, host, timeout=DEFAULT_TIMEOUT):
         self._host = host
+        self._timeout = timeout
 
     def command(self, command):
         with python_socket(AF_INET, SOCK_STREAM) as danfoss_socket:
+            danfoss_socket.settimeout(self._timeout)
             danfoss_socket.connect((self._host, 30046))
             result = self._command(command, danfoss_socket)
             danfoss_socket.close()
@@ -24,6 +32,7 @@ class DanfossClient:
         result = {}
 
         with python_socket(AF_INET, SOCK_STREAM) as danfoss_socket:
+            danfoss_socket.settimeout(self._timeout)
             danfoss_socket.connect((self._host, 30046))
             for command in ReadCommand:
                 result[command] = self._command(command, danfoss_socket)
@@ -56,24 +65,20 @@ class DanfossClient:
 
             if command in {UpdateCommand.boost_activate,
                            UpdateCommand.boost_deactivate}:
-                return self._read_bit(ReadCommand.boost, socket)
+                return self._read_command(ReadCommand.boost, socket)
 
             if command in {UpdateCommand.bypass_activate,
                            UpdateCommand.bypass_deactivate}:
-                return self._read_bit(ReadCommand.bypass, socket)
+                return self._read_command(ReadCommand.bypass, socket)
 
             if command in {UpdateCommand.automatic_bypass_activate,
                            UpdateCommand.automatic_bypass_deactivate}:
-                return self._read_bit(ReadCommand.automatic_bypass, socket)
+                return self._read_command(ReadCommand.automatic_bypass, socket)
 
-            if command in {UpdateCommand.operation_mode_demand}:
-                return self._read_bit(ReadCommand.operation_mode, socket)
-
-            if command in {UpdateCommand.operation_mode_program}:
-                return self._read_bit(ReadCommand.operation_mode, socket)
-
-            if command in {UpdateCommand.operation_mode_manual}:
-                return self._read_bit(ReadCommand.operation_mode, socket)
+            if command in {UpdateCommand.operation_mode_demand,
+                           UpdateCommand.operation_mode_program,
+                           UpdateCommand.operation_mode_manual}:
+                return self._read_command(ReadCommand.operation_mode, socket)
 
 
         if command in {UpdateCommand.set_fan_step_1,
